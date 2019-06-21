@@ -188,7 +188,7 @@ public class Stack {
         Parse exp = data.get("exp");
         Parse block = data.get("block1");
         parse.setNextLabel(exp.getFLabel());
-        parse.setCode(exp.getCode()+"\n"+exp.getTLabel()+": "+block.getCode()+
+        parse.setCode(exp.getCode()+"\n"+exp.getTLabel()+": "+block.getCode()+ " " +
                 exp.getFLabel()+": ");
         parses.add(parse);
         return parse;

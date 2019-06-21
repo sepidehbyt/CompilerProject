@@ -33,7 +33,7 @@ public class Compiler {
             "explist COMMA exp -> explist ",//function call variable values
             "IDtoken -> funcValue",
             "IDtoken -> funcCallValue",
-
+            "Return exp -> stmt",
     };
 
     private Compiler(String path) {
