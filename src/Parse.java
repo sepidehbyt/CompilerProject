@@ -45,7 +45,7 @@ public class Parse {
     }
 
     public String getPlace() {
-        if(place.matches("[0-9]+") || place.length() > 3)
+        if(place.matches("[0-9]+") || place.contains("if"))
             return place;
         else
             return "getValue(scopes,\""+place+"\")";
