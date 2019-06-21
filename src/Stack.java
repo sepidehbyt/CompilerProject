@@ -232,18 +232,20 @@ public class Stack {
         int blockNum = 0;
         for (int i = parses.size() - 1 ; i >= 0; i--) {
             Parse check = parses.get(i);
-            if(check.getType().equals(Parse.parse_type.exp) && !check.isProcessed()) {
+            if(check.getType().equals(Parse.parse_type.exp) && !check.isProcessed() && !exp) {
                 check.setProcessed(true);
                 res.put("exp", check);
                 exp = true;
             }
-            else if(check.getType().equals(Parse.parse_type.block) && !check.isProcessed()) {
+            else if(check.getType().equals(Parse.parse_type.block) && !check.isProcessed() && !block) {
                 check.setProcessed(true);
                 res.put("block"+(++blockNum), check);
-                if(blockNum == 1)
-                    block = true;
-                if(blockNum == 2)
-                    block2 = true;
+                block = true;
+            }
+            else if(check.getType().equals(Parse.parse_type.block) && !check.isProcessed() && (anotherBlock && !block2)) {
+                check.setProcessed(true);
+                res.put("block"+(++blockNum), check);
+                block2 = true;
             }
             if(exp && block) {
                 if(anotherBlock)
