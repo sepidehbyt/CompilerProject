@@ -80,7 +80,8 @@ public class Stack {
         ArrayList<Parse> twoLast = getLastND(2);
         Parse first = twoLast.get(1);
         Parse second = twoLast.get(0);
-        parse.setCode(getAllThePossibleNDCode()+parse.getPlace()+"=" + first.getPlace() +op+ second.getPlace() +"\n");
+        parse.setCode(getAllThePossibleNDCode()+
+                "setValue(scopes,\""+parse.getActualPlace()+"\"=" + first.getPlace() +op+ second.getPlace() +"\n");
         parses.add(parse);
         return parse;
     }
@@ -197,20 +198,20 @@ public class Stack {
 
     public Parse addIfElse(){
         Parse parse = new Parse();
-//        parse.setId(id++);
-//        parse.setPlace("w"+(whileHolder++));
-//        parse.setType(Parse.parse_type.nd);
-//        parse.setProcessed(false);
-//        Map<String, Parse> data = getLastExpAndLastBlock();
-//        Parse exp = data.get("exp");
-//        Parse block = data.get("block");
-//        parse.setNextLabel(exp.getFLabel());
-//        parse.setBeginLabel("L"+(labelHolder++));
-//        parse.setCode(parse.getBeginLabel()+": "+exp.getCode()+"\n"+exp.getTLabel()+": "+block.getCode()+
-//                (block.getNextLabel() != null ? "\n"+(block.getNextLabel()) + ": " : "") +
-//                "goto "+parse.getBeginLabel() +
-//                (block.getNextLabel() != null ? "\n"+(parse.getNextLabel()) + ": " : "") );
-//        parses.add(parse);
+        parse.setId(id++);
+        parse.setPlace("w"+(whileHolder++));
+        parse.setType(Parse.parse_type.nd);
+        parse.setProcessed(false);
+        Map<String, Parse> data = getLastExpAndLastBlock();
+        Parse exp = data.get("exp");
+        Parse block = data.get("block");
+        parse.setNextLabel(exp.getFLabel());
+        parse.setBeginLabel("L"+(labelHolder++));
+        parse.setCode(parse.getBeginLabel()+": "+exp.getCode()+"\n"+exp.getTLabel()+": "+block.getCode()+
+                (block.getNextLabel() != null ? "\n"+(block.getNextLabel()) + ": " : "") +
+                "goto "+parse.getBeginLabel() +
+                (block.getNextLabel() != null ? "\n"+(parse.getNextLabel()) + ": " : "") );
+        parses.add(parse);
         return parse;
     }
 
