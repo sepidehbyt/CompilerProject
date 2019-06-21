@@ -79,7 +79,7 @@ public class Stack {
         ArrayList<Parse> twoLast = getLastND(2);
         Parse first = twoLast.get(1);
         Parse second = twoLast.get(0);
-        parse.setCode(getAllThePossibleNDCode()+ "setValue(scopes,\""+parse.getActualPlace()+"\"=" + first.getPlace() +op+ second.getPlace() +"\n");
+        parse.setCode(getAllThePossibleNDCode()+ "setValue(scopes,\""+parse.getActualPlace()+"\"," + first.getPlace() +op+ second.getPlace() +");\n");
         parses.add(parse);
         return parse;
     }
