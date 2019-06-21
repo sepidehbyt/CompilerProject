@@ -1,7 +1,10 @@
 Program p1Main;
-	Real n1, n2, n3;
+	Int n4mber;
+
+	Function f4ctorial(Int n4mber) : Int Begin
+		Return n4mber * f4ctorial(n4mber - #1)
+	End;
+
 Begin
-	n1 := #20 - #10 / #2;
-	n2 := n1 / (#3 + #2);
-	n3 := n1 * n2 - #10
+	n4mber := f4ctorial(#5)
 End;

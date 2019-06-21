@@ -57,7 +57,6 @@ public class Stack {
         parses.add(parse);
 
         functionreturn = true;
-
     }
 
 
