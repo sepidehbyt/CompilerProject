@@ -11,6 +11,7 @@ public class Stack {
     private int labelHolder = 0;
     private int statementHolder = 0;
     private int whileHolder = 0;
+    private int ifHolder = 0;
     private boolean functionreturn = false;
 
     public Stack() {
@@ -79,7 +80,7 @@ public class Stack {
         ArrayList<Parse> twoLast = getLastND(2);
         Parse first = twoLast.get(1);
         Parse second = twoLast.get(0);
-        parse.setCode(getAllThePossibleNDCode()+parse.getPlace()+"="+"getValue(scopes,\"" + first.getPlace() + "\")"+op+"getValue(scopes,\"" + second.getPlace() + "\");"+"\n");
+        parse.setCode(getAllThePossibleNDCode()+parse.getPlace()+"=" + first.getPlace() +op+ second.getPlace() +"\n");
         parses.add(parse);
         return parse;
     }
@@ -90,12 +91,11 @@ public class Stack {
         ArrayList<Parse> twoLast = getLastND(2);
         Parse first = twoLast.get(1);
         Parse second = twoLast.get(0);
-        parse.setPlace("setValue(scopes,\"" + first.getPlace() + "\"," + "getValue(scopes,\"" + second.getPlace() + "\")" +  ");");
+        parse.setPlace("setValue(scopes,\"" + first.getActualPlace() + "\"," + second.getPlace() + ");");
         parse.setType(Parse.parse_type.nd);
         parse.setProcessed(false);
         if(functionreturn){
             parse.setCode(getAllThePossibleNDCode()+ "T" + (placeHolder-1) + "= *top;\ntop = top + 1;\n" +parse.getPlace()+"\n");
-
             functionreturn = false;
         }else{
             parse.setCode(getAllThePossibleNDCode()+parse.getPlace()+"\n");
@@ -129,7 +129,7 @@ public class Stack {
         parse.setProcessed(false);
         parse.setTLabel("L"+(labelHolder++));
         parse.setFLabel("L"+(labelHolder++));
-        parse.setCode(getAllThePossibleNDCode()+"if("+parse.getPlace()+") goto "+parse.getTLabel()+"\ngoto "+parse.getFLabel());
+        parse.setCode(getAllThePossibleNDCode()+"if("+parse.getPlace()+") goto "+parse.getTLabel()+";\ngoto "+parse.getFLabel()+";");
         parses.add(parse);
         return parse;
     }
@@ -173,9 +173,44 @@ public class Stack {
         parse.setBeginLabel("L"+(labelHolder++));
         parse.setCode(parse.getBeginLabel()+": "+exp.getCode()+"\n"+exp.getTLabel()+": "+block.getCode()+
                 (block.getNextLabel() != null ? "\n"+(block.getNextLabel()) + ": " : "") +
-                "goto "+parse.getBeginLabel() +
+                "goto "+parse.getBeginLabel() + ";" +
                 (block.getNextLabel() != null ? "\n"+(parse.getNextLabel()) + ": " : "") );
         parses.add(parse);
+        return parse;
+    }
+
+    public Parse addIf(){
+        Parse parse = new Parse();
+        parse.setId(id++);
+        parse.setPlace("I"+(ifHolder++));
+        parse.setType(Parse.parse_type.nd);
+        parse.setProcessed(false);
+        Map<String, Parse> data = getLastExpAndLastBlock();
+        Parse exp = data.get("exp");
+        Parse block = data.get("block");
+        parse.setNextLabel(exp.getFLabel());
+        parse.setCode(exp.getCode()+"\n"+exp.getTLabel()+": "+block.getCode()+
+                exp.getFLabel()+": ");
+        parses.add(parse);
+        return parse;
+    }
+
+    public Parse addIfElse(){
+        Parse parse = new Parse();
+//        parse.setId(id++);
+//        parse.setPlace("w"+(whileHolder++));
+//        parse.setType(Parse.parse_type.nd);
+//        parse.setProcessed(false);
+//        Map<String, Parse> data = getLastExpAndLastBlock();
+//        Parse exp = data.get("exp");
+//        Parse block = data.get("block");
+//        parse.setNextLabel(exp.getFLabel());
+//        parse.setBeginLabel("L"+(labelHolder++));
+//        parse.setCode(parse.getBeginLabel()+": "+exp.getCode()+"\n"+exp.getTLabel()+": "+block.getCode()+
+//                (block.getNextLabel() != null ? "\n"+(block.getNextLabel()) + ": " : "") +
+//                "goto "+parse.getBeginLabel() +
+//                (block.getNextLabel() != null ? "\n"+(parse.getNextLabel()) + ": " : "") );
+//        parses.add(parse);
         return parse;
     }
 

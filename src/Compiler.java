@@ -19,7 +19,7 @@ public class Compiler {
             "exp \\b(.*)\\b exp -> exp",
             "IDtoken ASSIGNMENT exp -> stmt",
             "LEFTP exp RIGHTP -> exp",
-            "stmt -> block", //NONE
+            "stmt -> block",
             "Begin stmtlist End -> block",
             "While exp Do block -> stmt",
             "If exp Then block -> stmt",
@@ -95,8 +95,17 @@ public class Compiler {
             case "Begin stmtlist End -> block":
                 stack.addStatement();
                 break;
+            case "stmt -> block":
+                stack.addStatement();
+                break;
             case "While exp Do block -> stmt":
                 stack.addWhile();
+                break;
+            case "If exp Then block -> stmt":
+                stack.addIf();
+                break;
+            case "If exp Then block Else block -> stmt":
+                stack.addIfElse();
                 break;
             case "IDtoken -> paramlist":
                 if(!currentFunction){
@@ -192,7 +201,7 @@ public class Compiler {
     }
 
     public static void main(String[] args) {
-        new Compiler("./output1.txt");
+        new Compiler("./output.txt");
     }
 
 }
