@@ -192,7 +192,7 @@ public class Compiler {
     }
 
     public static void main(String[] args) {
-        new Compiler("./output.txt");
+        new Compiler("./output1.txt");
     }
 
 }

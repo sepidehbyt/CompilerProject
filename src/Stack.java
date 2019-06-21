@@ -129,7 +129,7 @@ public class Stack {
         parse.setProcessed(false);
         parse.setTLabel("L"+(labelHolder++));
         parse.setFLabel("L"+(labelHolder++));
-        parse.setCode("if("+parse.getPlace()+") goto "+parse.getTLabel()+"\ngoto "+parse.getFLabel());
+        parse.setCode(getAllThePossibleNDCode()+"if("+parse.getPlace()+") goto "+parse.getTLabel()+"\ngoto "+parse.getFLabel());
         parses.add(parse);
         return parse;
     }
