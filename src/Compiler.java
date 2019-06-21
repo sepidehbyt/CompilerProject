@@ -26,7 +26,7 @@ public class Compiler {
             "If exp Then block Else block -> stmt",
             "IDtoken -> paramlist", //Function input
             "paramlist COMMA IDtoken -> paramlist", //Function input
-            "paramdecs -> paramdecs SEMICOLON", //Function inputs end
+            "paramdec -> paramdecs", //Function inputs end
             "Function funcValue LEFTP paramdecs RIGHTP COLON type block SEMICOLON",
             "funcCallValue LEFTP explist RIGHTP -> exp", //function call
             "exp -> explist",//function call variable values
@@ -119,7 +119,7 @@ public class Compiler {
             case "paramlist COMMA IDtoken -> paramlist":
                 currentFunctionParse.addToParams(getYYText(Line));
                 break;
-            case "paramdecs -> paramdecs SEMICOLON":
+            case "paramdec -> paramdecs":
                 currentFunction = false;
                 //function input ends
                 break;
