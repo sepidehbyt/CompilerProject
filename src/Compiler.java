@@ -17,7 +17,7 @@ public class Compiler {
             "IDtoken -> lvalue",
             "INTtoken -> exp",
             "exp \\b(.*)\\b exp -> exp",
-            "IDtoken ASSIGNMENT exp -> stmt",
+            "lvalue ASSIGNMENT exp -> stmt",
             "LEFTP exp RIGHTP -> exp",
             "stmt -> block",
             "Begin stmtlist End -> block",
@@ -33,7 +33,11 @@ public class Compiler {
             "explist COMMA exp -> explist ",//function call variable values
             "IDtoken -> funcValue",
             "IDtoken -> funcCallValue",
-            "Return exp -> stmt"
+            "Return exp -> stmt",
+            "caseValue COLON block SEMICOLON -> caseelement",
+            "caseelement caseValue COLON block SEMICOLON -> caseelement",
+            "Case exp caseelement End -> stmt",
+            "INTtoken -> caseValue",
 
     };
 
@@ -85,7 +89,7 @@ public class Compiler {
             case "exp \\b(.*)\\b exp -> exp":
                 processExpOpExp(Line);
                 break;
-            case "IDtoken ASSIGNMENT exp -> stmt":
+            case "lvalue ASSIGNMENT exp -> stmt":
                 stack.addAssignmentStatement();
                 break;
             case "LEFTP exp RIGHTP -> exp":
@@ -152,13 +156,25 @@ public class Compiler {
                 //add to stack value ro nemide hanoz
                 //baade akharin vorodi bayad baade akharin ghanon ye L(akharin placeholder label) : scopes = scopes + 1; bezarim bara vaghti bargasht
                 break;
+            case "INTtoken -> caseValue":
+                stack.addCaseValue(getYYText(Line));
+                break;
+            case "caseValue COLON block SEMICOLON -> caseelement":
+                stack.makeTheLastBlockCaseElement();
+                break;
+            case "caseelement caseValue COLON block SEMICOLON -> caseelement":
+                stack.makeTheLastBlockCaseElement();
+                break;
+            case "Case exp caseelement End -> stmt":
+                stack.addCase();
+                break;
         }
     }
 
     private String getYYText(String Line) {
         Pattern pattern = Pattern.compile("yytext = (.*)");
         Matcher matcher = pattern.matcher(Line);
-        return (matcher.find()) ? matcher.group(1) : "";
+        return (matcher.find()) ? matcher.group(1).replaceAll("#", "") : "";
     }
 
     private void processExpOpExp(String Line) {

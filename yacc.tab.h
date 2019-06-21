@@ -98,10 +98,11 @@ typedef union YYSTYPE
 #line 14 "yacc.y"
 
 	char *sval;
+	char *temp;
 
 
 /* Line 2058 of yacc.c  */
-#line 105 "yacc.tab.h"
+#line 106 "yacc.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

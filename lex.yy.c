@@ -1103,7 +1103,7 @@ YY_RULE_SETUP
 { 
        char *res = malloc( (size_t)yytext );
 	strcpy(res, yytext);
-	yylval.sval = res;
+       yylval.sval = res;
        return IDtoken;}
 	YY_BREAK
 case 43:
@@ -1120,18 +1120,18 @@ case 45:
 YY_RULE_SETUP
 #line 60 "lex.l"
 {
-       char *res = malloc( (size_t)yytext );
-	strcpy(res, yytext);
-	yylval.sval = res;
+       char *res1 = malloc( (size_t)yytext );
+	strcpy(res1, yytext);
+	yylval.sval = res1;
        return INTtoken;}
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
 #line 65 "lex.l"
 {
-       char *res = malloc( (size_t)yytext );
-	strcpy(res, yytext);
-	yylval.sval = res;
+       char *res2 = malloc( (size_t)yytext );
+	strcpy(res2, yytext);
+	yylval.sval = res2;
        return REALtoken;}
 	YY_BREAK
 case 47:

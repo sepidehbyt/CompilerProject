@@ -53,19 +53,19 @@
 [a-zA-Z_][a-zA-Z0-9_]* { 
        char *res = malloc( (size_t)yytext );
 	strcpy(res, yytext);
-	yylval.sval = res;
+       yylval.sval = res;
        return IDtoken;}
 #0+[0-9]+(\.{0,1})([eE][-+]{0,1}[0-9]+){0,1}(0+[0-9]+){0,1} {printf("Error on : %s\n", yytext);}
 #[-+]{0,1}((0|[1-9][0-9]*)(\.(0|[0-9]*[1-9]+)))([eE][-+]{0,1}(0|([1-9][0-9]))){0,1}0+ {printf("Error on : %s\n", yytext);}
 #0|#[-+]{0,1}[1-9][0-9]* {
-       char *res = malloc( (size_t)yytext );
-	strcpy(res, yytext);
-	yylval.sval = res;
+       char *res1 = malloc( (size_t)yytext );
+	strcpy(res1, yytext);
+	yylval.sval = res1;
        return INTtoken;}
 #[-+]{0,1}((0|[1-9][0-9]*)(\.(0|[0-9]*[1-9]+)){0,1})([eE][-+]{0,1}(0|([1-9][0-9]))){0,1} {
-       char *res = malloc( (size_t)yytext );
-	strcpy(res, yytext);
-	yylval.sval = res;
+       char *res2 = malloc( (size_t)yytext );
+	strcpy(res2, yytext);
+	yylval.sval = res2;
        return REALtoken;}
 [^ \t\n\/+-/(),*:;":="".GT."".GE."".NE."".EQ."".LT."".LE."]+ { printf("Error on : %s\n", yytext);}
 

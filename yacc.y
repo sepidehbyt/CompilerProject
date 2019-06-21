@@ -13,6 +13,7 @@ void yyerror(char* error);
 
 %union {
 	char *sval;
+	char *temp;
 }
 
 %start program
@@ -62,7 +63,8 @@ block : Begin stmtlist End {fprintf(fout, "Begin stmtlist End -> block yytext = 
 stmtlist : stmt {fprintf(fout, "stmt -> stmtlist yytext = %s \n",  yytext);} 
 	| stmtlist SEMICOLON stmt {fprintf(fout, "stmtlist SEMICOLON stmt -> stmtlist yytext = %s \n",  yytext);} 
 lvalue : IDtoken  {fprintf(fout, "IDtoken -> lvalue yytext = %s \n",  yylval.sval);} 
-funcValue : IDtoken  {fprintf(fout, "IDtoken -> funcValue yytext = %s \n",  yylval.sval);} 
+caseValue : INTtoken  {fprintf(fout, "INTtoken -> caseValue yytext = %s \n",  yylval.sval);} 
+funcValue : IDtoken  {fprintf(fout, "IDtoken -> funcValue yytext = %s \n",  yylval.sval);}
 funcCallValue : IDtoken  {fprintf(fout, "IDtoken -> funcCallValue yytext = %s \n",  yylval.sval);}
 stmt : lvalue ASSIGNMENT exp {fprintf(fout, "lvalue ASSIGNMENT exp -> stmt yytext = %s \n",  yylval.sval);} 
 	| If exp Then block {fprintf(fout, "If exp Then block -> stmt yytext = %s \n",  yytext);} 
@@ -70,7 +72,7 @@ stmt : lvalue ASSIGNMENT exp {fprintf(fout, "lvalue ASSIGNMENT exp -> stmt yytex
 	| While exp Do block {fprintf(fout, "While exp Do block -> stmt yytext = %s \n",  yytext);} 
 	| For lvalue ASSIGNMENT exp To exp Do block {fprintf(fout, "For IDtoken ASSIGNMENT exp To exp Do block -> stmt yytext = %s \n",  yytext);} 
 	| For lvalue ASSIGNMENT exp Downto exp Do block {fprintf(fout, "For IDtoken ASSIGNMENT exp Downto exp Do block -> stmt yytext = %s \n",  yytext);} 
-	| Case exp caseelement End {fprintf(fout, "Case exp caseelement End -> stmt yytext = %s \n",  yytext);} 
+	| Case exp COLON caseelement End {fprintf(fout, "Case exp caseelement End -> stmt yytext = %s \n",  yytext);} 
 	| Return exp {fprintf(fout, "Return exp -> stmt yytext = %s \n",  yytext);} 
 	| exp {fprintf(fout, "exp -> stmt yytext = %s \n",  yytext);} 
 exp : exp AndThen exp {fprintf(fout, "exp AndThen exp -> exp yytext = %s \n",  yytext);}  
@@ -90,10 +92,10 @@ exp : exp AndThen exp {fprintf(fout, "exp AndThen exp -> exp yytext = %s \n",  y
 	| REALtoken {fprintf(fout, "REALtoken -> exp yytext = %s \n",  yytext);} 
 	| True {fprintf(fout, "True -> exp yytext = %s \n",  yytext);} 
 	| False {fprintf(fout, "False -> exp yytext = %s \n",  yytext);} 
-	| lvalue {fprintf(fout, "lvalue -> exp yytext = %s \n",  yytext);} 
+	| lvalue {fprintf(fout, "lvalue -> exp yytext = %s \n",  yylval.sval);}
 	| funcCallValue LEFTP explist RIGHTP {fprintf(fout, "funcCallValue LEFTP explist RIGHTP -> exp yytext = %s \n",  yytext);} 
-caseelement : INTtoken COLON block SEMICOLON {fprintf(fout, "INTtoken COLON block SEMICOLON -> caseelement yytext = %s \n",  yytext);} 
-	| caseelement INTtoken COLON block SEMICOLON {fprintf(fout, "caseelement INTtoken COLON block SEMICOLON -> idlist yytext = %s \n",  yytext);} 
+caseelement : caseValue COLON block SEMICOLON {fprintf(fout, "caseValue COLON block SEMICOLON -> caseelement yytext = %s \n",  yytext);} 
+	| caseelement caseValue COLON block SEMICOLON {fprintf(fout, "caseelement caseValue COLON block SEMICOLON -> caseelement yytext = %s \n",  yytext);} 
 explist : exp {fprintf(fout, "exp -> explist yytext = %s \n",  yytext);} 
 	| explist COMMA exp {fprintf(fout, "explist COMMA exp -> explist yytext = %s \n",  yytext);} 
 			

@@ -6,7 +6,9 @@ public class Parse {
         nd,
         exp,
         block,
-        param
+        param,
+        caseElement,
+        caseValue,
     }
 
     private int id;
@@ -18,15 +20,12 @@ public class Parse {
     private String nextLabel;
     private String beginLabel;
     private String code;
-
-
     private String functionName;
+    private Stack<String> paramStack = new Stack<>();
 
     public Stack<String> getParamStack() {
         return paramStack;
     }
-
-    private Stack<String> paramStack = new Stack<>();
 
     public String getFunctionName() {
         return functionName;
@@ -120,7 +119,6 @@ public class Parse {
         paramStack.push(param);
     }
 
-
     @Override
     public String toString() {
         return "Parse{" +
@@ -128,10 +126,10 @@ public class Parse {
                 ", place='" + place + '\'' +
                 ", type=" + type +
                 ", processed=" + processed +
-                ", TLabel=" + TLabel +
-                ", FLabel=" + FLabel +
-                ", nextLabel=" + nextLabel +
-                ", beginLabel=" + beginLabel +
+                ", TLabel='" + TLabel + '\'' +
+                ", FLabel='" + FLabel + '\'' +
+                ", nextLabel='" + nextLabel + '\'' +
+                ", beginLabel='" + beginLabel + '\'' +
                 ", code='" + code + '\'' +
                 '}';
     }

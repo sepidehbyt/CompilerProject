@@ -12,6 +12,7 @@ public class Stack {
     private int statementHolder = 0;
     private int whileHolder = 0;
     private int ifHolder = 0;
+    private int caseHolder = 0;
     private boolean functionreturn = false;
 
     public Stack() {
@@ -31,7 +32,7 @@ public class Stack {
         for(int i = 0 ; i < currentFunctionParse.getParamStack().size() ; i++){
             setValueCode += "\nsetValue(scopes,\"" +currentFunctionParse.getParamStack().get(i)+"\",*top);" + "\ntop = top + 1;";
         }
-        allScopesParses.get(allScopesParses.size()-1).get(allScopesParses.get(allScopesParses.size()-1).size()-1).setCode(currentFunctionParse.getFunctionName()+" : scopes = scopes - 1;" + setValueCode +"\n" + getAllThePossibleNDCode()
+        getLastND(1).get(0).setCode(currentFunctionParse.getFunctionName()+" : scopes = scopes - 1;" + setValueCode +"\n" + getAllThePossibleNDCode()
                 + "top = top - 1;\n*top =" + "T" + (placeHolder-1) + ";\nreturnAddress = *rtop;\nrtop = rtop + 1;\ngoto *returnAddress;");
 //        System.out.println(allScopesParses.get(allScopesParses.size()-1).get(allScopesParses.get(allScopesParses.size()-1).size()-1));
     }
@@ -80,7 +81,17 @@ public class Stack {
         return parse;
     }
 
-        public Parse addArithmaticStatement(String op) {
+    public Parse addCaseValue (String place) {
+        Parse parse = new Parse();
+        parse.setId(id++);
+        parse.setPlace(place.trim());
+        parse.setType(Parse.parse_type.caseValue);
+        parse.setProcessed(false);
+        parses.add(parse);
+        return parse;
+    }
+
+    public Parse addArithmaticStatement(String op) {
         Parse parse = new Parse();
         parse.setId(id++);
         parse.setPlace("T"+(placeHolder++));
@@ -121,7 +132,10 @@ public class Stack {
                 code.append(check.getCode());
                 break;
             }
-            else if(check.getType().equals(Parse.parse_type.exp) || check.getType().equals(Parse.parse_type.block))
+            else if(check.getType().equals(Parse.parse_type.exp)
+                    || check.getType().equals(Parse.parse_type.block)
+                    || check.getType().equals(Parse.parse_type.caseElement)
+                    || check.getType().equals(Parse.parse_type.caseValue))
                 break;
         }
         return code.toString();
@@ -223,6 +237,58 @@ public class Stack {
         return parse;
     }
 
+    public Parse addCase(){
+        Parse parse = new Parse();
+        parse.setId(id++);
+        parse.setPlace("c"+(caseHolder++));
+        parse.setType(Parse.parse_type.nd);
+        parse.setProcessed(false);
+        Map<String, Parse> data = getLastCaseStuff();
+        ArrayList<Parse> arrayList = getLastND(1);
+        Parse caseValue = arrayList.get(0);
+        parse.setNextLabel("L"+(labelHolder++));
+        parse.setCode("");
+        for (int i = data.size()/2 - 1; i >= 0; i--) {
+            parse.setCode(parse.getCode()+"L"+(labelHolder++)+": "+
+                    "if("+caseValue.getPlace()+"!="+(data.get("value"+i).getPlace())+") goto L"+(labelHolder)+";\n"+
+                    data.get("element"+i).getCode()+
+                    "goto "+parse.getNextLabel()+";\n"
+                    );
+        }
+        parse.setCode(parse.getCode()+"L"+(labelHolder++)+": "+parse.getNextLabel()+": ");
+        parses.add(parse);
+        return parse;
+    }
+
+    public Parse makeTheLastBlockCaseElement() {
+        for (int i = parses.size() - 1 ; i >= 0; i--) {
+            Parse check = parses.get(i);
+            if(check.getType().equals(Parse.parse_type.block) && !check.isProcessed()) {
+                check.setType(Parse.parse_type.caseElement);
+                return check;
+            }
+        }
+        return null;
+    }
+
+    private Map<String, Parse> getLastCaseStuff() {
+        Map<String, Parse> res = new HashMap<>();
+        int caseValue = 0;
+        int caseElement = 0;
+        for (int i = parses.size() - 1 ; i >= 0 ; i--) {
+            Parse check = parses.get(i);
+            if(check.getType().equals(Parse.parse_type.caseElement) && !check.isProcessed()) {
+                check.setProcessed(true);
+                res.put("element"+(caseElement++), check);
+            }
+            else if(check.getType().equals(Parse.parse_type.caseValue) && !check.isProcessed()) {
+                check.setProcessed(true);
+                res.put("value"+(caseValue++), check);
+            }
+        }
+        return res;
+    }
+
     public Parse addParam(String name) {
         Parse parse = new Parse();
         parse.setId(id++);
@@ -233,8 +299,6 @@ public class Stack {
         parses.add(parse);
         return parse;
     }
-
-
 
     private Map<String, Parse> getLastExpAndLastBlock(boolean anotherBlock) {
         Map<String, Parse> res = new HashMap<>();
