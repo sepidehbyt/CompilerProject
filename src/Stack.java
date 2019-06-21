@@ -111,7 +111,7 @@ public class Stack {
                 code.append(check.getCode());
                 break;
             }
-            else if(check.getType().equals(Parse.parse_type.exp))
+            else if(check.getType().equals(Parse.parse_type.exp) || check.getType().equals(Parse.parse_type.block))
                 break;
         }
         return code.toString();
@@ -165,9 +165,9 @@ public class Stack {
         parse.setPlace("w"+(whileHolder++));
         parse.setType(Parse.parse_type.nd);
         parse.setProcessed(false);
-        Map<String, Parse> data = getLastExpAndLastBlock();
+        Map<String, Parse> data = getLastExpAndLastBlock(false);
         Parse exp = data.get("exp");
-        Parse block = data.get("block");
+        Parse block = data.get("block1");
         parse.setNextLabel(exp.getFLabel());
         parse.setBeginLabel("L"+(labelHolder++));
         parse.setCode(parse.getBeginLabel()+": "+exp.getCode()+"\n"+exp.getTLabel()+": "+block.getCode()+
@@ -184,9 +184,9 @@ public class Stack {
         parse.setPlace("I"+(ifHolder++));
         parse.setType(Parse.parse_type.nd);
         parse.setProcessed(false);
-        Map<String, Parse> data = getLastExpAndLastBlock();
+        Map<String, Parse> data = getLastExpAndLastBlock(false);
         Parse exp = data.get("exp");
-        Parse block = data.get("block");
+        Parse block = data.get("block1");
         parse.setNextLabel(exp.getFLabel());
         parse.setCode(exp.getCode()+"\n"+exp.getTLabel()+": "+block.getCode()+
                 exp.getFLabel()+": ");
@@ -200,15 +200,15 @@ public class Stack {
         parse.setPlace("w"+(whileHolder++));
         parse.setType(Parse.parse_type.nd);
         parse.setProcessed(false);
-        Map<String, Parse> data = getLastExpAndLastBlock();
+        Map<String, Parse> data = getLastExpAndLastBlock(true);
         Parse exp = data.get("exp");
-        Parse block = data.get("block");
-        parse.setNextLabel(exp.getFLabel());
-        parse.setBeginLabel("L"+(labelHolder++));
-        parse.setCode(parse.getBeginLabel()+": "+exp.getCode()+"\n"+exp.getTLabel()+": "+block.getCode()+
-                (block.getNextLabel() != null ? "\n"+(block.getNextLabel()) + ": " : "") +
-                "goto "+parse.getBeginLabel() +
-                (block.getNextLabel() != null ? "\n"+(parse.getNextLabel()) + ": " : "") );
+        Parse elseBlock = data.get("block1");
+        Parse ifBlock = data.get("block2");
+        parse.setNextLabel("L"+(labelHolder++));
+        parse.setCode(exp.getCode()+"\n"+exp.getTLabel()+": "+ifBlock.getCode()+
+                "goto " +parse.getNextLabel()+ ";\n"+
+                exp.getFLabel()+": "+elseBlock.getCode()+
+                parse.getNextLabel()+": ");
         parses.add(parse);
         return parse;
     }
@@ -226,9 +226,10 @@ public class Stack {
 
 
 
-    private Map<String, Parse> getLastExpAndLastBlock() {
+    private Map<String, Parse> getLastExpAndLastBlock(boolean anotherBlock) {
         Map<String, Parse> res = new HashMap<>();
-        boolean exp = false, block = false;
+        boolean exp = false, block = false, block2 = false;
+        int blockNum = 0;
         for (int i = parses.size() - 1 ; i >= 0; i--) {
             Parse check = parses.get(i);
             if(check.getType().equals(Parse.parse_type.exp) && !check.isProcessed()) {
@@ -238,11 +239,19 @@ public class Stack {
             }
             else if(check.getType().equals(Parse.parse_type.block) && !check.isProcessed()) {
                 check.setProcessed(true);
-                res.put("block", check);
-                block = true;
+                res.put("block"+(++blockNum), check);
+                if(blockNum == 1)
+                    block = true;
+                if(blockNum == 2)
+                    block2 = true;
             }
-            if(exp && block)
-                return res;
+            if(exp && block) {
+                if(anotherBlock)
+                    if(block2)
+                        return res;
+                else
+                    return res;
+            }
         }
         return res;
     }
