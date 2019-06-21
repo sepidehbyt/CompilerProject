@@ -32,12 +32,17 @@ public class Stack {
         for(int i = 0 ; i < currentFunctionParse.getParamStack().size() ; i++){
             setValueCode += "\nsetValue(scopes,\"" +currentFunctionParse.getParamStack().get(i)+"\",*top);" + "\ntop = top + 1;";
         }
-        getLastND(1).get(0).setCode(currentFunctionParse.getFunctionName()+" : scopes = scopes - 1;" + setValueCode +"\n" + getAllThePossibleNDCode()
-                + "top = top - 1;\n*top =" + "T" + (placeHolder-1) + ";\nreturnAddress = *rtop;\nrtop = rtop + 1;\ngoto *returnAddress;");
+        getLastParse().get(0).setCode("scopes = scopes - 1;" + setValueCode +"\n" + getAllThePossibleNDCode() + "top = top - 1;\n*top ="
+                + getLastNDNotTrue(1).get(0).getPlace() + ";\nreturnAddress = *rtop;\nrtop = rtop + 1;\ngoto *returnAddress;");
 //        System.out.println(allScopesParses.get(allScopesParses.size()-1).get(allScopesParses.get(allScopesParses.size()-1).size()-1));
     }
 
-    public void resetScope(){
+    public void resetScope(String funcName){
+        Parse tmp = getLastParse().get(0);
+        tmp.setCode(funcName + " :" + tmp.getCode());
+
+
+
         parses = allScopesParses.get(0);
     }
 
@@ -47,18 +52,18 @@ public class Stack {
         parse.setPlace("T"+(placeHolder++));
         parse.setType(Parse.parse_type.nd);
         parse.setProcessed(false);
-        parse.setCode((getAllThePossibleNDCode() + "rtop = rtop - 1;\n" + "*rtop = &&L" + (labelHolder++) + ";\n" +  "goto " + name + ";\n"));
+        parse.setCode((getAllThePossibleNDCode() + "rtop = rtop - 1;\n" + "*rtop = &&L" + (labelHolder++) + ";\n" +  "goto " + name + ";\n L" + (labelHolder-1)
+                + ":" + "T"+ (placeHolder-1) + " = *top;"+"\n"+"top = top + 1;\n"));
+        getLastND(getFunctionInputSize(name));
+//        T0 = *top;
+//        top = top + 1;
         parses.add(parse);
 //        Parse check = parses.get(parses.size() - 1);
 //        if(check.getType().equals(Parse.parse_type.nd) && !check.isProcessed()) {
 //            check.setCode((check.getCode() == null ? "" : (check.getCode()+"\n")) + "rtop = rtop - 1;\n" + "*rtop = &&L" + (labelHolder++) + ";\n" +  "goto " + name + ";\n");
 //        }
-        //nemitonam check konam ke age null nabashe dorost dar miad ya naß
+//          nemitonam check konam ke age null nabashe dorost dar miad ya naß
 
-        ArrayList<Parse> funcInputNDs = getLastND(getFunctionInputSize(name));
-        for(int i = 0 ; i < funcInputNDs.size() ; i++){
-            funcInputNDs.get(i).setProcessed(true);
-        }
 
 //        Parse parse = new Parse();
 //        parse.setId(id++);
@@ -343,6 +348,23 @@ public class Stack {
                 res.add(check);
             }
         }
+        return res;
+    }
+
+    private ArrayList<Parse> getLastNDNotTrue(int count) {
+        ArrayList<Parse> res = new ArrayList<>();
+        for (int i = parses.size() - 1 ; i >= 0 && res.size() != count ; i--) {
+            Parse check = parses.get(i);
+            if(check.getType().equals(Parse.parse_type.nd) && !check.isProcessed()) {
+                res.add(check);
+            }
+        }
+        return res;
+    }
+
+    private ArrayList<Parse> getLastParse() {
+            ArrayList<Parse> res = new ArrayList<>();
+            res.add(parses.get(parses.size() - 1));
         return res;
     }
 

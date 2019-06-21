@@ -116,6 +116,7 @@ public class Compiler {
                 if(!currentFunction){
                     stack.nextScope();
                     currentFunctionParse = stack.addParam(getYYText(Line));
+                    currentFunctionParse.setFunctionName(funcName);
                     currentFunction = true;
                 }else{
                     currentFunctionParse.addToParams(getYYText(Line).trim());
@@ -135,8 +136,7 @@ public class Compiler {
                 funcCallName = getYYText(Line.trim());
                 break;
             case "Function funcValue LEFTP paramdecs RIGHTP COLON type block SEMICOLON":
-                currentFunctionParse.setFunctionName(funcName);
-                stack.resetScope();
+                stack.resetScope(funcName);
                 //currentFunctionParse.setCode();
                 break;
             case "Return exp -> stmt":
