@@ -1769,13 +1769,13 @@ yyreduce:
   case 38:
 /* Line 1792 of yacc.c  */
 #line 73 "yacc.y"
-    {fprintf(fout, "For IDtoken ASSIGNMENT exp To exp Do block -> stmt yytext = %s \n",  yytext);}
+    {fprintf(fout, "For lvalue ASSIGNMENT exp To exp Do block -> stmt yytext = %s \n",  yytext);}
     break;
 
   case 39:
 /* Line 1792 of yacc.c  */
 #line 74 "yacc.y"
-    {fprintf(fout, "For IDtoken ASSIGNMENT exp Downto exp Do block -> stmt yytext = %s \n",  yytext);}
+    {fprintf(fout, "For lvalue ASSIGNMENT exp Downto exp Do block -> stmt yytext = %s \n",  yytext);}
     break;
 
   case 40:

@@ -267,6 +267,11 @@ public class Stack {
         return parse;
     }
 
+    public Parse addFor(String state){
+        Parse parse = new Parse();
+        return parse;
+    }
+
     public Parse makeTheLastBlockCaseElement() {
         for (int i = parses.size() - 1 ; i >= 0; i--) {
             Parse check = parses.get(i);
