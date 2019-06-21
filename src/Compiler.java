@@ -9,6 +9,7 @@ public class Compiler {
     private Stack stack;
     private Boolean currentFunction = false;
     private Parse currentFunctionParse ;
+    private String lastOp;
 
     private String funcName;
     private String funcCallName;
@@ -87,7 +88,9 @@ public class Compiler {
                 stack.addAssignmentStatement();
                 break;
             case "LEFTP exp RIGHTP -> exp":
-                stack.makeTheLastNDExp();
+                if(!lastOp.equals("DIV") && !lastOp.equals("MUL") &&
+                        !lastOp.equals("SUB") && !lastOp.equals("ADD"))
+                    stack.makeTheLastNDExp();
                 break;
             case "Begin stmtlist End -> block":
                 stack.addStatement();
@@ -149,6 +152,7 @@ public class Compiler {
         Pattern p = Pattern.compile("exp \\b(.*)\\b exp");
         Matcher m = p.matcher(Line);
         String op = (m.find()) ? m.group(1) : "";
+        lastOp = op;
         switch (op) {
             case "DIV":
                 stack.addArithmaticStatement("/");
