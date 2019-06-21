@@ -33,7 +33,8 @@ public class Compiler {
             "explist COMMA exp -> explist ",//function call variable values
             "IDtoken -> funcValue",
             "IDtoken -> funcCallValue",
-            "Return exp -> stmt",
+            "Return exp -> stmt"
+
     };
 
     private Compiler(String path) {
@@ -131,8 +132,11 @@ public class Compiler {
                 break;
             case "Function funcValue LEFTP paramdecs RIGHTP COLON type block SEMICOLON":
                 currentFunctionParse.setFunctionName(funcName);
-                stack.prevScope(currentFunctionParse);
+                stack.resetScope();
                 //currentFunctionParse.setCode();
+                break;
+            case "Return exp -> stmt":
+                stack.prevScope(currentFunctionParse);
                 break;
             case "funcCallValue LEFTP explist RIGHTP -> exp":
                 stack.addGotoFunction(funcCallName);

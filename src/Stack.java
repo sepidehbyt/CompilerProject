@@ -31,17 +31,27 @@ public class Stack {
         for(int i = 0 ; i < currentFunctionParse.getParamStack().size() ; i++){
             setValueCode += "\nsetValue(scopes,\"" +currentFunctionParse.getParamStack().get(i)+"\",*top);" + "\ntop = top + 1;";
         }
-        allScopesParses.get(allScopesParses.size()-1).get(allScopesParses.get(allScopesParses.size()-1).size()-1).setCode(currentFunctionParse.getFunctionName()+" : scopes = scopes - 1;" + setValueCode +"\n" + allScopesParses.get(allScopesParses.size()-1).get(allScopesParses.get(allScopesParses.size()-1).size()-1).getCode()
+        allScopesParses.get(allScopesParses.size()-1).get(allScopesParses.get(allScopesParses.size()-1).size()-1).setCode(currentFunctionParse.getFunctionName()+" : scopes = scopes - 1;" + setValueCode +"\n" + getAllThePossibleNDCode()
                 + "top = top - 1;\n*top =" + "T" + (placeHolder-1) + ";\nreturnAddress = *rtop;\nrtop = rtop + 1;\ngoto *returnAddress;");
-        parses = allScopesParses.get(0);
 //        System.out.println(allScopesParses.get(allScopesParses.size()-1).get(allScopesParses.get(allScopesParses.size()-1).size()-1));
     }
 
+    public void resetScope(){
+        parses = allScopesParses.get(0);
+    }
+
     public void addGotoFunction(String name){
-        Parse check = parses.get(parses.size() - 1);
-        if(check.getType().equals(Parse.parse_type.nd) && !check.isProcessed()) {
-            check.setCode((check.getCode() == null ? "" : (check.getCode()+"\n")) + "rtop = rtop - 1;\n" + "*rtop = &&L" + (labelHolder++) + ";\n" +  "goto " + name + ";\n");
-        }
+        Parse parse = new Parse();
+        parse.setId(id++);
+        parse.setPlace("T"+(placeHolder++));
+        parse.setType(Parse.parse_type.nd);
+        parse.setProcessed(false);
+        parse.setCode((getAllThePossibleNDCode() + "rtop = rtop - 1;\n" + "*rtop = &&L" + (labelHolder++) + ";\n" +  "goto " + name + ";\n"));
+        parses.add(parse);
+//        Parse check = parses.get(parses.size() - 1);
+//        if(check.getType().equals(Parse.parse_type.nd) && !check.isProcessed()) {
+//            check.setCode((check.getCode() == null ? "" : (check.getCode()+"\n")) + "rtop = rtop - 1;\n" + "*rtop = &&L" + (labelHolder++) + ";\n" +  "goto " + name + ";\n");
+//        }
         //nemitonam check konam ke age null nabashe dorost dar miad ya naß
 
         ArrayList<Parse> funcInputNDs = getLastND(getFunctionInputSize(name));
@@ -49,12 +59,12 @@ public class Stack {
             funcInputNDs.get(i).setProcessed(true);
         }
 
-        Parse parse = new Parse();
-        parse.setId(id++);
-        parse.setPlace("T"+(placeHolder++));
-        parse.setType(Parse.parse_type.nd);
-        parse.setProcessed(false);
-        parses.add(parse);
+//        Parse parse = new Parse();
+//        parse.setId(id++);
+//        parse.setPlace("T"+(placeHolder++));
+//        parse.setType(Parse.parse_type.nd);
+//        parse.setProcessed(false);
+//        parses.add(parse);
 
         functionreturn = true;
     }
@@ -70,7 +80,7 @@ public class Stack {
         return parse;
     }
 
-    public Parse addArithmaticStatement(String op) {
+        public Parse addArithmaticStatement(String op) {
         Parse parse = new Parse();
         parse.setId(id++);
         parse.setPlace("T"+(placeHolder++));
