@@ -255,7 +255,9 @@ public class Stack {
                     "goto "+parse.getNextLabel()+";\n"
                     );
         }
-        parse.setCode(parse.getCode()+"L"+(labelHolder++)+": "+parse.getNextLabel()+": ");
+        ArrayList<Parse> lastND = getLastND(1);
+        parse.setCode(((lastND != null) ? lastND.get(0).getCode() : "") +
+                parse.getCode()+"L"+(labelHolder++)+": "+parse.getNextLabel()+": ");
         parses.add(parse);
         return parse;
     }
