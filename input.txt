@@ -1,18 +1,14 @@
 Program p1Main;
-	Int v1;
-
+	Real n1, n2, n3;
 Begin
-	v1 := #0;
-	Case o0perator :
-			#0 :
-				v1 := #1;
-			#1 :
-				v1 := #2;
-			#2 :
-				v1 := #3;
-			#3 :
-				v1 := #4;
-			#4 :
-				v1 := #5;
+	n1 := #20 - #10 / #2;
+	n2 := n1 / (#3 + #2);
+	n3 := n1 * n2 - #10;
+
+	If(n1 .GT. #2) Then Begin
+		While(n2 .GT. #0) Do Begin
+			n3 := n3 + #1;
+			n2 := n2 - #1
 		End
+	End
 End;

@@ -67,6 +67,7 @@ public class Compiler {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        stack.print();
         stack.printAnswer();
 //        System.out.println(stack.getParses().get(stack.getParses().size()-1).getCode());
         printTheAns();

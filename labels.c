@@ -14,35 +14,32 @@ char* createString(char* string);
 
 int main(){
 	void* returnAddress;
-	double* top = (double*) malloc(1000 * sizeof(double));
+double* top = (double*) malloc(1000 * sizeof(double));
 	void** rtop = (void**) malloc(1000 * sizeof(void*));
 	struct variable** scopes = (struct variable**) malloc(100 * sizeof(struct variable*));
 	
 	top += 1000;
 	rtop += 1000;
 	scopes += 100;	goto MainFunction; 
-	MainFunction : scopes = scopes - 1; setValue(scopes,"v1",0);
-
-printf("salam");
-L1: if(getValue(scopes,"o0perator")!=0) goto L2;
-setValue(scopes,"v1",1);
-goto L0;
-L2: if(getValue(scopes,"o0perator")!=1) goto L3;
-setValue(scopes,"v1",2);
-goto L0;
-L3: if(getValue(scopes,"o0perator")!=2) goto L4;
-setValue(scopes,"v1",3);
-goto L0;
-L4: if(getValue(scopes,"o0perator")!=3) goto L5;
-setValue(scopes,"v1",4);
-goto L0;
-L5: if(getValue(scopes,"o0perator")!=4) goto L6;
-setValue(scopes,"v1",5);
-goto L0;
-L6: L0: 
-printf("salam");
-printf("salam %d", getValue(scopes, "v1"));
-return 0;}
+MainFunction : scopes = scopes - 1; setValue(scopes,"T0",10/2);
+setValue(scopes,"T1",20-getValue(scopes,"T0"));
+setValue(scopes,"n1",getValue(scopes,"T1"));
+setValue(scopes,"T2",3+2);
+setValue(scopes,"T3",getValue(scopes,"n1")/getValue(scopes,"T2"));
+setValue(scopes,"n2",getValue(scopes,"T3"));
+setValue(scopes,"T4",getValue(scopes,"n1")*getValue(scopes,"n2"));
+setValue(scopes,"T5",getValue(scopes,"T4")-10);
+setValue(scopes,"n3",getValue(scopes,"T5"));
+if(getValue(scopes,"n1")>2) goto L0;
+goto L1;
+L0: L4: if(getValue(scopes,"n2")>0) goto L2;
+goto L3;
+L2: setValue(scopes,"T6",getValue(scopes,"n3")+1);
+setValue(scopes,"n3",getValue(scopes,"T6"));
+setValue(scopes,"T7",getValue(scopes,"n2")-1);
+setValue(scopes,"n2",getValue(scopes,"T7"));
+goto L4;L3: 
+ L1: return 0;}
 void setValue(struct variable** scope, char* id, double value){
 	if(*scope == NULL){
 		struct variable* newVar = (struct variable*) malloc(sizeof(struct variable));

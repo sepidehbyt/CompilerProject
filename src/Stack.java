@@ -191,9 +191,11 @@ public class Stack {
         parse.setProcessed(false);
         ArrayList<Parse> lastND = getLastND(1);
         Parse last = lastND.get(0);
-        if(last.getNextLabel() != null)
+        if(last.getNextLabel() != null) {
             parse.setNextLabel(last.getNextLabel());
-        parse.setCode(last.getCode());
+        }
+        parse.setCode(last.getCode()
+        +(parse.getNextLabel() != null && !last.getCode().contains(parse.getNextLabel() +":") ? parse.getNextLabel() +": \n" : ""));
         parses.add(parse);
         return parse;
     }
