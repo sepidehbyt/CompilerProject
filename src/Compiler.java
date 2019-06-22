@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,7 +11,7 @@ public class Compiler {
     private Boolean currentFunction = false;
     private Parse currentFunctionParse ;
     private String lastOp;
-
+    private ArrayList<String> functionValues;
     private String funcName;
     private String funcCallName;
     private String [] patterns = {
@@ -38,11 +39,13 @@ public class Compiler {
             "caseelement caseValue COLON block SEMICOLON -> caseelement",
             "Case exp caseelement End -> stmt",
             "INTtoken -> caseValue",
+            "Program IDtoken SEMICOLON declist block SEMICOLON"
 
     };
 
     private Compiler(String path) {
         stack = new Stack();
+        functionValues = new ArrayList<>();
         readAndHandle(path);
     }
 
@@ -61,7 +64,7 @@ public class Compiler {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        stack.print();
+        stack.printAnswer();
 //        System.out.println(stack.getParses().get(stack.getParses().size()-1).getCode());
         printTheAns();
     }
@@ -143,16 +146,21 @@ public class Compiler {
                 stack.prevScope(currentFunctionParse);
                 break;
             case "funcCallValue LEFTP explist RIGHTP -> exp":
-                stack.addGotoFunction(funcCallName);
+                stack.addGotoFunction(funcCallName,functionValues);
+                functionValues = new ArrayList<>();
                 //set return label esmesho nemide khate badesh ye label mizarim labelaro mirizim to rtop
                 //rtop = rtop - 1;
                 //*rtop = &&L0;
                 //bar asase esmesh ke mide bebinim chanta vorodi migire az inputStack hamonghadr berizim to top
                 break;
             case "explist COMMA exp -> explist":
+                Line = Line.replaceAll("#", "");
+                functionValues.add(stack.getLastNDNotTrue(1).get(0).getPlace());
                 //add to stack value ro nemide hanoz
                 break;
             case "exp -> explist":
+                Line = Line.replaceAll("#", "");
+                functionValues.add(stack.getLastNDNotTrue(1).get(0).getPlace());
                 //add to stack value ro nemide hanoz
                 //baade akharin vorodi bayad baade akharin ghanon ye L(akharin placeholder label) : scopes = scopes + 1; bezarim bara vaghti bargasht
                 break;

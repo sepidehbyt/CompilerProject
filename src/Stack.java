@@ -46,14 +46,21 @@ public class Stack {
         parses = allScopesParses.get(0);
     }
 
-    public void addGotoFunction(String name){
+    public void addGotoFunction(String name,ArrayList<String> functionValues){
         Parse parse = new Parse();
         parse.setId(id++);
         parse.setPlace("T"+(placeHolder++));
         parse.setType(Parse.parse_type.nd);
         parse.setProcessed(false);
-        parse.setCode((getAllThePossibleNDCode() + "rtop = rtop - 1;\n" + "*rtop = &&L" + (labelHolder++) + ";\n" +  "goto " + name + ";\n L" + (labelHolder-1)
-                + ":" + "T"+ (placeHolder-1) + " = *top;"+"\n"+"top = top + 1;\n"));
+        String pushInputs = "";
+//        top = top - 1;
+//	*top = 40;
+        for(int i = 0 ; i < functionValues.size() ; i++){
+            pushInputs += "top = top - 1;\n";
+            pushInputs += "*top =" + functionValues.get(i)+";\n";
+        }
+        parse.setCode((getAllThePossibleNDCode() + "rtop = rtop - 1;\n" + "*rtop = &&L" + (labelHolder++) + ";\n" + pushInputs + "goto " + name + ";\n L" + (labelHolder-1)
+                + ": scopes = scopes + 1;\n" + "setValue(scopes,\"T"+ (placeHolder-1) + "\",*top);"+"\n"+"top = top + 1;\n"));
         getLastND(getFunctionInputSize(name));
 //        T0 = *top;
 //        top = top + 1;
@@ -120,7 +127,7 @@ public class Stack {
         parse.setType(Parse.parse_type.nd);
         parse.setProcessed(false);
         if(functionreturn){
-            parse.setCode(getAllThePossibleNDCode()+ "T" + (placeHolder-1) + "= *top;\ntop = top + 1;\n" +parse.getPlace()+"\n");
+            parse.setCode(getAllThePossibleNDCode());
             functionreturn = false;
         }else{
             parse.setCode(getAllThePossibleNDCode()+parse.getPlace()+"\n");
@@ -351,7 +358,7 @@ public class Stack {
         return res;
     }
 
-    private ArrayList<Parse> getLastNDNotTrue(int count) {
+    public ArrayList<Parse> getLastNDNotTrue(int count) {
         ArrayList<Parse> res = new ArrayList<>();
         for (int i = parses.size() - 1 ; i >= 0 && res.size() != count ; i--) {
             Parse check = parses.get(i);
@@ -398,6 +405,92 @@ public class Stack {
         for (int i = 0 ; i < allScopesParses.size() ; i++){
             System.out.println(i + " : " + allScopesParses.get(i).get(allScopesParses.get(i).size()-1).getCode());
         }
+//        System.out.println(allScopesParses.get(1));
+    }
+
+    public void printAnswer(){
+        System.out.println("#include <stdio.h>\n" +
+                "#include <stdlib.h>\n" +
+                "#include <string.h>\n" +
+                "\n" +
+                "struct variable{\n" +
+                "\tchar* id;\n" +
+                "\tdouble value;\n" +
+                "\tstruct variable* next;\n" +
+                "};\n" +
+                "\n" +
+                "void setValue(struct variable** scope, char* id, double value);\n" +
+                "double getValue(struct variable** scope, char* id);\n" +
+                "char* createString(char* string);\n" +
+                "\n" +
+                "int main(){");
+        System.out.println("\n" +
+                "\tvoid* returnAddress;\n" +
+                "double* top = (double*) malloc(1000 * sizeof(double));\n" +
+                "\tvoid** rtop = (void**) malloc(1000 * sizeof(void*));\n" +
+                "\tstruct variable** scopes = (struct variable**) malloc(100 * sizeof(struct variable*));\n" +
+                "\t\n" +
+                "\ttop += 1000;\n" +
+                "\trtop += 1000;\n" +
+                "\tscopes += 100;");
+        System.out.println("\tgoto MainFunction; \n");
+
+
+        for (int i = 1 ; i < allScopesParses.size() ; i++){
+            System.out.println(allScopesParses.get(i).get(allScopesParses.get(i).size()-1).getCode());
+        }
+
+        System.out.println("MainFunction : scopes = scopes - 1; " +allScopesParses.get(0).get(allScopesParses.get(0).size()-1).getCode());
+        System.out.println("return 0;" +
+                "}");
+        System.out.println("\n" +
+                "void setValue(struct variable** scope, char* id, double value){\n" +
+                "\tif(*scope == NULL){\n" +
+                "\t\tstruct variable* newVar = (struct variable*) malloc(sizeof(struct variable));\n" +
+                "\t\tnewVar->id = createString(id);\n" +
+                "\t\tnewVar->value = value;\n" +
+                "\t\tnewVar->next = NULL;\n" +
+                "\t\t*scope = newVar;\n" +
+                "\t}else{\n" +
+                "\t\tstruct variable* node = *scope;\n" +
+                "\t\twhile(node->next != NULL){\n" +
+                "\t\t\tif(strcmp(node->id, id) == 0){\n" +
+                "\t\t\t\tnode->value = value;\n" +
+                "\t\t\t\treturn;\n" +
+                "\t\t\t}\n" +
+                "\t\t\tnode = node->next;\n" +
+                "\t\t}\n" +
+                "\t\tif(strcmp(node->id, id) == 0){\n" +
+                "\t\t\tnode->value = value;\n" +
+                "\t\t\treturn;\n" +
+                "\t\t}\n" +
+                "\t\tstruct variable* newVar = (struct variable*) malloc(sizeof(struct variable));\n" +
+                "\t\tnewVar->id = createString(id);\n" +
+                "\t\tnewVar->value = value;\n" +
+                "\t\tnewVar->next = NULL;\n" +
+                "\t\tnode->next = newVar;\n" +
+                "\t}\n" +
+                "}\n" +
+                "\n" +
+                "double getValue(struct variable** scope, char* id){\n" +
+                "\twhile(1){\n" +
+                "\t\tstruct variable* node = *scope;\n" +
+                "\t\twhile(node != NULL){\n" +
+                "\t\t\tif(strcmp(node->id, id) == 0){\n" +
+                "\t\t\t\treturn node->value;\n" +
+                "\t\t\t}\n" +
+                "\t\t\tnode = node->next;\n" +
+                "\t\t}\n" +
+                "\t\tscope = scope + 1;\n" +
+                "\t}\n" +
+                "}\n" +
+                "\n" +
+                "char* createString(char* string){\n" +
+                "\tchar* pointer = (char*) malloc(strlen(string) + 1);\n" +
+                "\tstrcpy(pointer, string);\n" +
+                "\tpointer[strlen(string)] = 0;\n" +
+                "\treturn pointer;\n" +
+                "}");
 //        System.out.println(allScopesParses.get(1));
     }
 
