@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -40,8 +41,8 @@ public class Compiler {
             "Case exp caseelement End -> stmt",
             "INTtoken -> caseValue",
             "For lvalue ASSIGNMENT exp To exp Do block -> stmt",
-            "For lvalue ASSIGNMENT exp Downto exp Do block -> stmt"
-            "Program IDtoken SEMICOLON declist block SEMICOLON"
+            "For lvalue ASSIGNMENT exp Downto exp Do block -> stmt",
+            "Program IDtoken SEMICOLON declist block SEMICOLON",
 
     };
 
@@ -236,7 +237,9 @@ public class Compiler {
         //TODO complete this shit
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        Runtime.getRuntime().exec("C:\\Users\\Sepideh\\Documents\\Sepideh Duc\\Courses term8\\Compiler\\Intermidiate Code\\ProjectPhase3\\target", null,
+                new File("C:\\Users\\Sepideh\\Documents\\Sepideh Duc\\Courses term8\\Compiler\\Intermidiate Code\\ProjectPhase3"));
         new Compiler("./output.txt");
     }
 

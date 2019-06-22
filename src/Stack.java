@@ -1,3 +1,6 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -413,7 +416,29 @@ public class Stack {
 //        System.out.println(allScopesParses.get(1));
     }
 
-    public void printAnswer(){
+    public void printAnswer()  {
+        File file = new File("labels.c");
+        PrintWriter printWriter = null;
+        try {
+            printWriter = new PrintWriter(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        printWriter.append("#include <stdio.h>\n" +
+                "#include <stdlib.h>\n" +
+                "#include <string.h>\n" +
+                "\n" +
+                "struct variable{\n" +
+                "\tchar* id;\n" +
+                "\tdouble value;\n" +
+                "\tstruct variable* next;\n" +
+                "};\n" +
+                "\n" +
+                "void setValue(struct variable** scope, char* id, double value);\n" +
+                "double getValue(struct variable** scope, char* id);\n" +
+                "char* createString(char* string);\n" +
+                "\n" +
+                "int main(){");
         System.out.println("#include <stdio.h>\n" +
                 "#include <stdlib.h>\n" +
                 "#include <string.h>\n" +
@@ -429,6 +454,16 @@ public class Stack {
                 "char* createString(char* string);\n" +
                 "\n" +
                 "int main(){");
+
+        printWriter.append("\n" +
+                "\tvoid* returnAddress;\n" +
+                "double* top = (double*) malloc(1000 * sizeof(double));\n" +
+                "\tvoid** rtop = (void**) malloc(1000 * sizeof(void*));\n" +
+                "\tstruct variable** scopes = (struct variable**) malloc(100 * sizeof(struct variable*));\n" +
+                "\t\n" +
+                "\ttop += 1000;\n" +
+                "\trtop += 1000;\n" +
+                "\tscopes += 100;");
         System.out.println("\n" +
                 "\tvoid* returnAddress;\n" +
                 "double* top = (double*) malloc(1000 * sizeof(double));\n" +
@@ -438,16 +473,24 @@ public class Stack {
                 "\ttop += 1000;\n" +
                 "\trtop += 1000;\n" +
                 "\tscopes += 100;");
+
+        printWriter.append("\tgoto MainFunction; \n");
         System.out.println("\tgoto MainFunction; \n");
 
 
         for (int i = 1 ; i < allScopesParses.size() ; i++){
             System.out.println(allScopesParses.get(i).get(allScopesParses.get(i).size()-1).getCode());
+            printWriter.append(allScopesParses.get(i).get(allScopesParses.get(i).size()-1).getCode());
         }
 
         System.out.println("MainFunction : scopes = scopes - 1; " +allScopesParses.get(0).get(allScopesParses.get(0).size()-1).getCode());
+        printWriter.append("MainFunction : scopes = scopes - 1; " +allScopesParses.get(0).get(allScopesParses.get(0).size()-1).getCode());
+
         System.out.println("return 0;" +
                 "}");
+        printWriter.append("return 0;" +
+                "}");
+
         System.out.println("\n" +
                 "void setValue(struct variable** scope, char* id, double value){\n" +
                 "\tif(*scope == NULL){\n" +
@@ -496,7 +539,56 @@ public class Stack {
                 "\tpointer[strlen(string)] = 0;\n" +
                 "\treturn pointer;\n" +
                 "}");
-//        System.out.println(allScopesParses.get(1));
+        printWriter.append("\n" +
+                "void setValue(struct variable** scope, char* id, double value){\n" +
+                "\tif(*scope == NULL){\n" +
+                "\t\tstruct variable* newVar = (struct variable*) malloc(sizeof(struct variable));\n" +
+                "\t\tnewVar->id = createString(id);\n" +
+                "\t\tnewVar->value = value;\n" +
+                "\t\tnewVar->next = NULL;\n" +
+                "\t\t*scope = newVar;\n" +
+                "\t}else{\n" +
+                "\t\tstruct variable* node = *scope;\n" +
+                "\t\twhile(node->next != NULL){\n" +
+                "\t\t\tif(strcmp(node->id, id) == 0){\n" +
+                "\t\t\t\tnode->value = value;\n" +
+                "\t\t\t\treturn;\n" +
+                "\t\t\t}\n" +
+                "\t\t\tnode = node->next;\n" +
+                "\t\t}\n" +
+                "\t\tif(strcmp(node->id, id) == 0){\n" +
+                "\t\t\tnode->value = value;\n" +
+                "\t\t\treturn;\n" +
+                "\t\t}\n" +
+                "\t\tstruct variable* newVar = (struct variable*) malloc(sizeof(struct variable));\n" +
+                "\t\tnewVar->id = createString(id);\n" +
+                "\t\tnewVar->value = value;\n" +
+                "\t\tnewVar->next = NULL;\n" +
+                "\t\tnode->next = newVar;\n" +
+                "\t}\n" +
+                "}\n" +
+                "\n" +
+                "double getValue(struct variable** scope, char* id){\n" +
+                "\twhile(1){\n" +
+                "\t\tstruct variable* node = *scope;\n" +
+                "\t\twhile(node != NULL){\n" +
+                "\t\t\tif(strcmp(node->id, id) == 0){\n" +
+                "\t\t\t\treturn node->value;\n" +
+                "\t\t\t}\n" +
+                "\t\t\tnode = node->next;\n" +
+                "\t\t}\n" +
+                "\t\tscope = scope + 1;\n" +
+                "\t}\n" +
+                "}\n" +
+                "\n" +
+                "char* createString(char* string){\n" +
+                "\tchar* pointer = (char*) malloc(strlen(string) + 1);\n" +
+                "\tstrcpy(pointer, string);\n" +
+                "\tpointer[strlen(string)] = 0;\n" +
+                "\treturn pointer;\n" +
+                "}");
+        printWriter.flush();
+        printWriter.close();
     }
 
     public void setParses(ArrayList<Parse> parses) {

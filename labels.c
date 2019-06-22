@@ -1,40 +1,92 @@
-  
-// function to check even or not 
-void checkEvenOrNot(int num) 
-{ 
-    if (num % 2 == 0) 
-        goto even; // jump to even 
-    else
-        goto odd; // jump to odd 
-  
-even: 
-    printf(" is evenn"); 
-    return; // return if even 
-odd: 
-    printf(" is odd"); 
-} 
-  
-// Driver program to test above function 
-int main() 
-{ 
-    //int num = 26; 
-    //checkEvenOrNot(num); 
-    int a = 22;
-    int b = 20;
-    int c = 30;
-    int d = 10;
-    int e = 0;
-    int t;
-L5: if(a>b) goto L0;
-goto L1;
-L0: L4: if(c>d) goto L2;
-goto L3;
-L2: e = 100; 
-b = b + 1;
-d = d + 1;
-goto L4;
-L3: goto L5;
-L1:  t=3 ;
-printf("%d", e);
-    return 0; 
-} 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct variable{
+	char* id;
+	double value;
+	struct variable* next;
+};
+
+void setValue(struct variable** scope, char* id, double value);
+double getValue(struct variable** scope, char* id);
+char* createString(char* string);
+
+int main(){
+	void* returnAddress;
+	double* top = (double*) malloc(1000 * sizeof(double));
+	void** rtop = (void**) malloc(1000 * sizeof(void*));
+	struct variable** scopes = (struct variable**) malloc(100 * sizeof(struct variable*));
+	
+	top += 1000;
+	rtop += 1000;
+	scopes += 100;	goto MainFunction; 
+	MainFunction : scopes = scopes - 1; setValue(scopes,"v1",0);
+
+printf("salam");
+L1: if(getValue(scopes,"o0perator")!=0) goto L2;
+setValue(scopes,"v1",1);
+goto L0;
+L2: if(getValue(scopes,"o0perator")!=1) goto L3;
+setValue(scopes,"v1",2);
+goto L0;
+L3: if(getValue(scopes,"o0perator")!=2) goto L4;
+setValue(scopes,"v1",3);
+goto L0;
+L4: if(getValue(scopes,"o0perator")!=3) goto L5;
+setValue(scopes,"v1",4);
+goto L0;
+L5: if(getValue(scopes,"o0perator")!=4) goto L6;
+setValue(scopes,"v1",5);
+goto L0;
+L6: L0: 
+printf("salam");
+printf("salam %d", getValue(scopes, "v1"));
+return 0;}
+void setValue(struct variable** scope, char* id, double value){
+	if(*scope == NULL){
+		struct variable* newVar = (struct variable*) malloc(sizeof(struct variable));
+		newVar->id = createString(id);
+		newVar->value = value;
+		newVar->next = NULL;
+		*scope = newVar;
+	}else{
+		struct variable* node = *scope;
+		while(node->next != NULL){
+			if(strcmp(node->id, id) == 0){
+				node->value = value;
+				return;
+			}
+			node = node->next;
+		}
+		if(strcmp(node->id, id) == 0){
+			node->value = value;
+			return;
+		}
+		struct variable* newVar = (struct variable*) malloc(sizeof(struct variable));
+		newVar->id = createString(id);
+		newVar->value = value;
+		newVar->next = NULL;
+		node->next = newVar;
+	}
+}
+
+double getValue(struct variable** scope, char* id){
+	while(1){
+		struct variable* node = *scope;
+		while(node != NULL){
+			if(strcmp(node->id, id) == 0){
+				return node->value;
+			}
+			node = node->next;
+		}
+		scope = scope + 1;
+	}
+}
+
+char* createString(char* string){
+	char* pointer = (char*) malloc(strlen(string) + 1);
+	strcpy(pointer, string);
+	pointer[strlen(string)] = 0;
+	return pointer;
+}
