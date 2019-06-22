@@ -70,8 +70,8 @@ stmt : lvalue ASSIGNMENT exp {fprintf(fout, "lvalue ASSIGNMENT exp -> stmt yytex
 	| If exp Then block {fprintf(fout, "If exp Then block -> stmt yytext = %s \n",  yytext);} 
 	| If exp Then block Else block {fprintf(fout, "If exp Then block Else block -> stmt yytext = %s \n",  yytext);} 
 	| While exp Do block {fprintf(fout, "While exp Do block -> stmt yytext = %s \n",  yytext);} 
-	| For lvalue ASSIGNMENT exp To exp Do block {fprintf(fout, "For IDtoken ASSIGNMENT exp To exp Do block -> stmt yytext = %s \n",  yytext);} 
-	| For lvalue ASSIGNMENT exp Downto exp Do block {fprintf(fout, "For IDtoken ASSIGNMENT exp Downto exp Do block -> stmt yytext = %s \n",  yytext);} 
+	| For lvalue ASSIGNMENT exp To exp Do block {fprintf(fout, "For lvalue ASSIGNMENT exp To exp Do block -> stmt yytext = %s \n",  yytext);} 
+	| For lvalue ASSIGNMENT exp Downto exp Do block {fprintf(fout, "For lvalue ASSIGNMENT exp Downto exp Do block -> stmt yytext = %s \n",  yytext);} 
 	| Case exp COLON caseelement End {fprintf(fout, "Case exp caseelement End -> stmt yytext = %s \n",  yytext);} 
 	| Return exp {fprintf(fout, "Return exp -> stmt yytext = %s \n",  yytext);} 
 	| exp {fprintf(fout, "exp -> stmt yytext = %s \n",  yytext);} 

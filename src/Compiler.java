@@ -39,6 +39,8 @@ public class Compiler {
             "caseelement caseValue COLON block SEMICOLON -> caseelement",
             "Case exp caseelement End -> stmt",
             "INTtoken -> caseValue",
+            "For lvalue ASSIGNMENT exp To exp Do block -> stmt",
+            "For lvalue ASSIGNMENT exp Downto exp Do block -> stmt"
             "Program IDtoken SEMICOLON declist block SEMICOLON"
 
     };
@@ -175,6 +177,12 @@ public class Compiler {
                 break;
             case "Case exp caseelement End -> stmt":
                 stack.addCase();
+                break;
+            case "For lvalue ASSIGNMENT exp To exp Do block -> stmt":
+                stack.addFor("To");
+                break;
+            case "For lvalue ASSIGNMENT exp Downto exp Do block -> stmt":
+                stack.addFor("Downto");
                 break;
         }
     }
